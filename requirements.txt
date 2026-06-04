@@ -6,3 +6,5 @@ aiosqlite>=0.17.0
 
 # 可选依赖（如果使用 MySQL 数据库）
 # PyMySQL>=1.0
+# Additional dependencies for original code
+ujson>=5.0.0
