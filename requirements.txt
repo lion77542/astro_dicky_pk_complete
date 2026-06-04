@@ -1,0 +1,8 @@
+# Astro Dicky PK Complete Edition Dependencies
+nonebot2>=2.0.0
+arrow>=1.2.0
+aiomysql>=0.1.1
+aiosqlite>=0.17.0
+
+# 可选依赖（如果使用 MySQL 数据库）
+# PyMySQL>=1.0
