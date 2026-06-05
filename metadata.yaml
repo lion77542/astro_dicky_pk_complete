@@ -1,50 +1,14 @@
 name: astro_dicky_pk_complete
 display_name: "牛子 PK 完整版 ⚡"
-short_desc: "完整保留原版所有功能！无阉割的 AstrBot 牛子 PK 游戏 🎮"
-desc: |
-  **🔥 完全移植 nonebot-plugin-dicky-pk v2.6.5**
-  
-  ✨ **核心特性**:
-  - ✅ 完整保留原版所有功能（农场、徽章、好友、转世）
-  - ✅ 无代码阉割，100% 功能保留
-  - ✅ 完美适配 AstrBot 平台 >= 4.16
-  - ✅ 支持 QQ/Telegram/Discord/Lark
-  
-  🎮 **完整功能列表**:
-  - 核心对战系统（PK 挑战、属性比拼）
-  - 农场修炼系统（定时开放修炼）
-  - 成就徽章系统（记录战绩解锁称号）
-  - 好友管理系统（共享加成收益）
-  - 转世重生系统（等级永久增益）
-  - 每日次数限制（防刷保护）
-  
-  ⚙️ **灵活配置**:
-  - 每日最大 PK 次数
-  - CD 冷却时间
-  - 农场开放时间
-  - 好友系统参数
-  - 转世成功率
-  
-  🔧 **技术栈**:
-  - AstrBot >=4.16,<5
-  - SQLite 数据库
-  - Python 3.9+
-  
-  💯 **质量保证**:
-  - ✅ 完全符合 AstrBot 插件规范
-  - ✅ 使用标准装饰器和命令系统
-  - ✅ 完整的错误处理
-  - ✅ 持续维护更新
-
+desc: "完整保留原版所有功能！无阉割的 AstrBot 牛子 PK 游戏 🎮"
+version: v3.0.0
 author: tkgs0 (原), lion77542 (移植)
-version: v2.0.4
-license: MIT
 repo: https://github.com/lion77542/astro_dicky_pk_complete
+astrbot_version: ">=4.16,<5"
 support_platforms:
   - qq_official
   - telegram
   - discord
   - lark
-astrbot_version: ">=4.16,<5"
 category: game
 enable_at_start: true
