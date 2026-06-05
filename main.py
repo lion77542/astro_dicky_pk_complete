@@ -6,13 +6,11 @@ Astro Dicky PK - Complete Edition
 """
 
 import logging
-import asyncio
-from pathlib import Path
 from astrbot.api import AstrBotConfig
 from astrbot.api.event import AstrMessageEvent
 from astrbot.api.event import filter
 from astrbot.api.star import Context, Star, register
-from astrbot.api.message_components import At, Plain
+from astrbot.api.message_components import At
 
 logger = logging.getLogger("astrbot")
 
@@ -21,7 +19,7 @@ logger = logging.getLogger("astrbot")
     "astro_dicky_pk_complete",
     "tkgs0 (原), lion77542 (移植)",
     "🎮 完整保留原版所有功能的牛子 PK 游戏",
-    "v3.0.0",
+    "v3.0.1",
     "https://github.com/lion77542/astro_dicky_pk_complete"
 )
 class DickyPKPlugin(Star):
@@ -31,15 +29,11 @@ class DickyPKPlugin(Star):
         super().__init__(context)
         self.config = config
         self.initialized = False
-        logger.info("🎮 Astro Dicky PK - Complete Edition v3.0.0 加载中...")
+        logger.info("🎮 Astro Dicky PK - Complete Edition v3.0.1 加载中...")
 
     async def initialize(self):
-        """初始化插件"""
+        """初始化插件 - AstrBot 会自动调用"""
         if not self.initialized:
-            # 获取数据目录
-            data_dir = self.get_data_dir()
-            logger.info(f"📁 数据目录: {data_dir}")
-            
             # 初始化数据库
             from .src.db import Sql
             Sql.init_database()
@@ -120,7 +114,6 @@ class DickyPKPlugin(Star):
     @filter.command("注册牛子")
     async def cmd_sign_up(self, event: AstrMessageEvent):
         """注册牛子"""
-        await self.initialize()
         result = self._process_message(event, "注册牛子")
         if result:
             yield event.plain_result(result)
@@ -128,7 +121,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子")
     async def cmd_chinchin(self, event: AstrMessageEvent):
         """查看牛子信息"""
-        await self.initialize()
         result = self._process_message(event, "牛子")
         if result:
             yield event.plain_result(result)
@@ -137,7 +129,6 @@ class DickyPKPlugin(Star):
     @filter.command("排行")
     async def cmd_ranking(self, event: AstrMessageEvent):
         """查看排名"""
-        await self.initialize()
         result = self._process_message(event, "牛子排名")
         if result:
             yield event.plain_result(result)
@@ -145,7 +136,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子成就")
     async def cmd_badge(self, event: AstrMessageEvent):
         """查看成就"""
-        await self.initialize()
         result = self._process_message(event, "牛子成就")
         if result:
             yield event.plain_result(result)
@@ -153,7 +143,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子转生")
     async def cmd_rebirth(self, event: AstrMessageEvent):
         """转生"""
-        await self.initialize()
         result = self._process_message(event, "牛子转生")
         if result:
             yield event.plain_result(result)
@@ -161,7 +150,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子仙境")
     async def cmd_farm_info(self, event: AstrMessageEvent):
         """查看农场"""
-        await self.initialize()
         result = self._process_message(event, "牛子仙境")
         if result:
             yield event.plain_result(result)
@@ -171,7 +159,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子修仙")
     async def cmd_farm_start(self, event: AstrMessageEvent):
         """开始修炼"""
-        await self.initialize()
         result = self._process_message(event, "牛子修炼")
         if result:
             yield event.plain_result(result)
@@ -180,7 +167,6 @@ class DickyPKPlugin(Star):
     @filter.command("牛子好友")
     async def cmd_friends(self, event: AstrMessageEvent):
         """查看好友"""
-        await self.initialize()
         result = self._process_message(event, "牛友")
         if result:
             yield event.plain_result(result)
@@ -189,7 +175,6 @@ class DickyPKPlugin(Star):
     @filter.command("锁我")
     async def cmd_lock_me(self, event: AstrMessageEvent):
         """锁自己"""
-        await self.initialize()
         result = self._process_message(event, "🔒我")
         if result:
             yield event.plain_result(result)
@@ -197,7 +182,6 @@ class DickyPKPlugin(Star):
     @filter.command("打胶")
     async def cmd_glue(self, event: AstrMessageEvent):
         """打胶"""
-        await self.initialize()
         result = self._process_message(event, "打胶")
         if result:
             yield event.plain_result(result)
@@ -205,7 +189,6 @@ class DickyPKPlugin(Star):
     @filter.command("pk")
     async def cmd_pk(self, event: AstrMessageEvent):
         """PK"""
-        await self.initialize()
         result = self._process_message(event, "pk", require_at=True)
         if result:
             yield event.plain_result(result)
@@ -214,7 +197,6 @@ class DickyPKPlugin(Star):
     @filter.command("看看牛子")
     async def cmd_see_chinchin(self, event: AstrMessageEvent):
         """查看别人的牛子"""
-        await self.initialize()
         result = self._process_message(event, "看他牛子", require_at=True)
         if result:
             yield event.plain_result(result)
@@ -223,7 +205,6 @@ class DickyPKPlugin(Star):
     @filter.command("添加朋友")
     async def cmd_friends_add(self, event: AstrMessageEvent):
         """添加好友"""
-        await self.initialize()
         result = self._process_message(event, "添加牛友", require_at=True)
         if result:
             yield event.plain_result(result)
@@ -232,7 +213,6 @@ class DickyPKPlugin(Star):
     @filter.command("删除朋友")
     async def cmd_friends_delete(self, event: AstrMessageEvent):
         """删除好友"""
-        await self.initialize()
         result = self._process_message(event, "删除牛友", require_at=True)
         if result:
             yield event.plain_result(result)
@@ -241,7 +221,6 @@ class DickyPKPlugin(Star):
     @filter.command("锁")
     async def cmd_lock_target(self, event: AstrMessageEvent):
         """锁别人"""
-        await self.initialize()
         result = self._process_message(event, "🔒", require_at=True)
         if result:
             yield event.plain_result(result)
