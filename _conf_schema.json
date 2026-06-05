@@ -1,0 +1,38 @@
+{
+  "dicky_pk": {
+    "description": "牛子 PK 游戏配置",
+    "type": "object",
+    "properties": {
+      "max_pks_per_day": {
+        "description": "每日最大 PK 次数",
+        "type": "int",
+        "default": 5
+      },
+      "pk_cd_time": {
+        "description": "PK 冷却时间（秒）",
+        "type": "int",
+        "default": 300
+      },
+      "lock_daily_limited": {
+        "description": "每日锁最多次数",
+        "type": "int",
+        "default": 10
+      },
+      "glue_daily_limited": {
+        "description": "每日打胶最多次数",
+        "type": "int",
+        "default": 5
+      },
+      "new_chinchin_length_random_min": {
+        "description": "新注册牛子最小长度",
+        "type": "float",
+        "default": 5.0
+      },
+      "new_chinchin_length_random_max": {
+        "description": "新注册牛子最大长度",
+        "type": "float",
+        "default": 15.0
+      }
+    }
+  }
+}
