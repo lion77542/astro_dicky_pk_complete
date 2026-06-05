@@ -23,7 +23,7 @@ logger = logging.getLogger("astrbot")
     "astro_dicky_pk_complete",
     "tkgs0 (原), lion77542 (移植)",
     "🎮 完整保留原版所有功能的牛子 PK 游戏",
-    "v2.0.0",
+    "v2.0.1",
     "https://github.com/lion77542/astro_dicky_pk_complete"
 )
 class DickyPKPlugin(Star):
