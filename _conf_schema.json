@@ -1,36 +1,38 @@
 {
-  "max_pks_per_day": {
-    "description": "每日最大 PK 次数",
-    "type": "int",
-    "default": 5,
-    "hint": "每个用户每天最多可以发起的 PK 次数"
-  },
-  "pk_cd_time": {
-    "description": "PK 冷却时间（秒）",
-    "type": "int",
-    "default": 300,
-    "hint": "两次 PK 之间的冷却间隔"
-  },
-  "lock_daily_limited": {
-    "description": "每日锁最多次数",
-    "type": "int",
-    "default": 10,
-    "hint": "每个用户每天最多可以锁的次数"
-  },
-  "glue_daily_limited": {
-    "description": "每日打胶最多次数",
-    "type": "int",
-    "default": 5,
-    "hint": "每个用户每天最多可以打胶的次数"
-  },
-  "new_chinchin_length_random_min": {
-    "description": "新注册牛子最小长度（厘米）",
-    "type": "float",
-    "default": 5.0
-  },
-  "new_chinchin_length_random_max": {
-    "description": "新注册牛子最大长度（厘米）",
-    "type": "float",
-    "default": 15.0
+  "dicky_pk": {
+    "description": "牛子 PK 游戏配置",
+    "type": "object",
+    "properties": {
+      "max_pks_per_day": {
+        "description": "每日最大 PK 次数",
+        "type": "int",
+        "default": 5
+      },
+      "pk_cd_time": {
+        "description": "PK 冷却时间（秒）",
+        "type": "int",
+        "default": 300
+      },
+      "lock_daily_limited": {
+        "description": "每日锁最多次数",
+        "type": "int",
+        "default": 10
+      },
+      "glue_daily_limited": {
+        "description": "每日打胶最多次数",
+        "type": "int",
+        "default": 5
+      },
+      "new_chinchin_length_random_min": {
+        "description": "新注册牛子最小长度",
+        "type": "float",
+        "default": 5.0
+      },
+      "new_chinchin_length_random_max": {
+        "description": "新注册牛子最大长度",
+        "type": "float",
+        "default": 15.0
+      }
+    }
   }
 }
