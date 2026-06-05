@@ -1,13 +1,17 @@
 from pathlib import Path
+import os
 import ujson as json
 from .utils import fixed_two_decimal_digits, Random
 from .config_parser import TimeParser
 
+# 使用 AstrBot 数据目录
+ASTRBOT_DATA_DIR = Path(os.environ.get('ASTRBOT_DATA_DIR', 'data'))
+PLUGIN_DATA_DIR = ASTRBOT_DATA_DIR / 'plugins' / 'astro_dicky_pk_complete'
 
 config_template = json.loads(
     (Path(__file__).parent / 'config.json').read_text('utf-8')
 )
-config_file_path: Path = Path() / 'configs' / 'Dicky_PK.json'
+config_file_path: Path = PLUGIN_DATA_DIR / 'configs' / 'Dicky_PK.json'
 config_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 def config_file():
