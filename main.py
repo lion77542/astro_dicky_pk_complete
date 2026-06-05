@@ -15,6 +15,7 @@ from astrbot.api.star import Context, Star, register
 from astrbot.api.message_components import At
 
 from .src.main import message_processor, KEYWORDS, VERSION, HELPPER
+from .src.db import lazy_init_database
 
 logger = logging.getLogger("astrbot")
 
@@ -23,7 +24,7 @@ logger = logging.getLogger("astrbot")
     "astro_dicky_pk_complete",
     "tkgs0 (原), lion77542 (移植)",
     "🎮 完整保留原版所有功能的牛子 PK 游戏",
-    "v2.0.3",
+    "v2.0.4",
     "https://github.com/lion77542/astro_dicky_pk_complete"
 )
 class DickyPKPlugin(Star):
@@ -32,7 +33,15 @@ class DickyPKPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig) -> None:
         super().__init__(context)
         self.config = config
+        self.initialized = False
         logger.info(f"🎮 Astro Dicky PK - Complete Edition v{VERSION} 加载中...")
+
+    async def initialize(self):
+        """初始化数据库"""
+        if not self.initialized:
+            await lazy_init_database()
+            self.initialized = True
+            logger.info("✅ 数据库初始化完成")
 
     def _get_sender_info(self, event: AstrMessageEvent):
         """获取发送者信息"""
@@ -53,23 +62,38 @@ class DickyPKPlugin(Star):
         return None
 
     def _process_message(self, event: AstrMessageEvent, message: str, require_at: bool = False):
-        """统一处理消息"""
+        """处理消息并返回结果"""
         sender_id, sender_name, group_id = self._get_sender_info(event)
         at_qq = self._get_at_qq(event)
 
         if require_at and not at_qq:
-            return event.plain_result("请@你想操作的人！")
+            return "请@你想操作的人！"
 
+        # 收集消息的列表
+        collected_messages = []
+        
+        # 创建消息发送钩子
+        def send_message_hook(qq, group, message):
+            if isinstance(message, str):
+                collected_messages.append(message)
+            elif isinstance(message, list):
+                collected_messages.extend([m for m in message if m])
+
+        # 调用原项目的 message_processor
         result = message_processor(
             message=message,
             qq=int(sender_id),
             group=int(group_id) if group_id else 0,
             at_qq=int(at_qq) if at_qq else None,
-            nickname=sender_name
+            nickname=sender_name,
+            impl_send_message=send_message_hook
         )
 
-        if result:
-            return event.plain_result(result)
+        # 返回收集到的消息
+        if collected_messages:
+            return "\n".join(collected_messages)
+        elif result:
+            return str(result)
         return None
 
     @filter.command("牛子帮助")
@@ -81,116 +105,131 @@ class DickyPKPlugin(Star):
     @filter.command("注册牛子")
     async def cmd_sign_up(self, event: AstrMessageEvent):
         """注册牛子"""
+        await self.initialize()
         result = self._process_message(event, "注册牛子")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子")
     async def cmd_chinchin(self, event: AstrMessageEvent):
         """查看牛子信息"""
+        await self.initialize()
         result = self._process_message(event, "牛子")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子排名")
     @filter.command("排行")
     async def cmd_ranking(self, event: AstrMessageEvent):
         """查看排名"""
+        await self.initialize()
         result = self._process_message(event, "牛子排名")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子成就")
     async def cmd_badge(self, event: AstrMessageEvent):
         """查看成就"""
+        await self.initialize()
         result = self._process_message(event, "牛子成就")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子转生")
     async def cmd_rebirth(self, event: AstrMessageEvent):
         """转生"""
+        await self.initialize()
         result = self._process_message(event, "牛子转生")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子仙境")
     async def cmd_farm_info(self, event: AstrMessageEvent):
         """查看农场"""
+        await self.initialize()
         result = self._process_message(event, "牛子仙境")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛子修炼")
     @filter.command("牛子练功")
     @filter.command("牛子修仙")
     async def cmd_farm_start(self, event: AstrMessageEvent):
         """开始修炼"""
+        await self.initialize()
         result = self._process_message(event, "牛子修炼")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("牛友")
     @filter.command("牛子好友")
     async def cmd_friends(self, event: AstrMessageEvent):
         """查看好友"""
+        await self.initialize()
         result = self._process_message(event, "牛友")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("🔒我")
     @filter.command("锁我")
     async def cmd_lock_me(self, event: AstrMessageEvent):
         """锁自己"""
+        await self.initialize()
         result = self._process_message(event, "🔒我")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("打胶")
     async def cmd_glue(self, event: AstrMessageEvent):
         """打胶"""
+        await self.initialize()
         result = self._process_message(event, "打胶")
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("pk")
     async def cmd_pk(self, event: AstrMessageEvent):
         """PK"""
+        await self.initialize()
         result = self._process_message(event, "pk", require_at=True)
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("看他牛子")
     @filter.command("看看牛子")
     async def cmd_see_chinchin(self, event: AstrMessageEvent):
         """查看别人的牛子"""
+        await self.initialize()
         result = self._process_message(event, "看他牛子", require_at=True)
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("添加牛友")
     @filter.command("添加朋友")
     async def cmd_friends_add(self, event: AstrMessageEvent):
         """添加好友"""
+        await self.initialize()
         result = self._process_message(event, "添加牛友", require_at=True)
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("删除牛友")
     @filter.command("删除朋友")
     async def cmd_friends_delete(self, event: AstrMessageEvent):
         """删除好友"""
+        await self.initialize()
         result = self._process_message(event, "删除牛友", require_at=True)
         if result:
-            yield result
+            yield event.plain_result(result)
 
     @filter.command("🔒")
     @filter.command("锁")
     async def cmd_lock_target(self, event: AstrMessageEvent):
         """锁别人"""
+        await self.initialize()
         result = self._process_message(event, "🔒", require_at=True)
         if result:
-            yield result
+            yield event.plain_result(result)
 
     async def terminate(self):
         """插件卸载时清理"""
