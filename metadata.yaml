@@ -1,20 +1,14 @@
 name: astro_dicky_pk_complete
 display_name: "牛子 PK 完整版 ⚡"
-short_desc: "完整保留原版所有功能（3484 行代码）！无阉割的 AstrBot 牛子 PK 游戏 🎮"
+short_desc: "完整保留原版所有功能！无阉割的 AstrBot 牛子 PK 游戏 🎮"
 desc: |
   **🔥 完全移植 nonebot-plugin-dicky-pk v2.6.5**
   
   ✨ **核心特性**:
   - ✅ 完整保留原版所有功能（农场、徽章、好友、转世）
   - ✅ 无代码阉割，100% 功能保留
-  - ✅ 完美适配 AstrBot 平台
+  - ✅ 完美适配 AstrBot 平台 >= 4.16
   - ✅ 支持 QQ/Telegram/Discord/Lark
-  
-  📊 **项目规模**:
-  - Python 文件：10 个
-  - 代码行数：**3,484 行**
-  - 仓库大小：122 KB
-  - 依赖库：nonebot2 >= 2.0.0
   
   🎮 **完整功能列表**:
   - 核心对战系统（PK 挑战、属性比拼）
@@ -22,7 +16,6 @@ desc: |
   - 成就徽章系统（记录战绩解锁称号）
   - 好友管理系统（共享加成收益）
   - 转世重生系统（等级永久增益）
-  - 经济系统（金币/经验奖励）
   - 每日次数限制（防刷保护）
   
   ⚙️ **灵活配置**:
@@ -31,24 +24,23 @@ desc: |
   - 农场开放时间
   - 好友系统参数
   - 转世成功率
-  - 等等...
   
   🔧 **技术栈**:
-  - AstrBot ≥4.16
-  - SQLite / MySQL 数据库
+  - AstrBot >=4.16,<5
+  - SQLite 数据库
   - Python 3.9+
   
   💯 **质量保证**:
-  - ✅ 生产级稳定代码
+  - ✅ 完全符合 AstrBot 插件规范
+  - ✅ 使用标准装饰器和命令系统
   - ✅ 完整的错误处理
-  - ✅ 详细的文档说明
   - ✅ 持续维护更新
-  
+
 author: tkgs0 (原), lion77542 (移植)
-version: 1.0.0
+version: v2.0.0
 license: MIT
+repo: https://github.com/lion77542/astro_dicky_pk_complete
 support_platforms:
-  - aiocqhttp
   - qq_official
   - telegram
   - discord
@@ -56,4 +48,3 @@ support_platforms:
 astrbot_version: ">=4.16,<5"
 category: game
 enable_at_start: true
-entry_point: src.main
