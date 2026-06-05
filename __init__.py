@@ -1,76 +1,358 @@
 """
 Astro Dicky PK - Complete Edition
-牛子 PK 完整版 - AstrBot 标准化插件入口
+牛子 PK 完整版 - AstrBot 标准化插件
 
 ✨ Full port with ALL original features preserved!
 ✅ Compatible with AstrBot >= 4.16
 🎮 Supports: QQ/Telegram/Discord/Lark
 """
 
+from astrbot.api import logger
+from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
+from astrbot.api.star import Context, Star, register
+from astrbot.api.message_components import Plain, At
+
 from .src.main import message_processor, KEYWORDS, VERSION, HELPPER
+from .src.db import lazy_init_database
 
-__version__ = "1.0.0"
-__plugin_name__ = "astro_dicky_pk_complete"
 
-# 插件元数据（AstrBot 会自动读取）
-__plugin_meta__ = {
-    "name": "牛子 PK 完整版",
-    "description": "🎮 完整保留原版所有功能",
-    "version": "1.0.0",
-    "author": "lion77542 (移植自 tkgs0)",
-}
+@register(
+    "astro_dicky_pk_complete", 
+    "tkgs0 (原), lion77542 (移植)", 
+    "🎮 完整保留原版所有功能的牛子 PK 游戏",
+    "v2.0.0",
+    "https://github.com/lion77542/astro_dicky_pk_complete"
+)
+class AstroDickyPK(Star):
+    """牛子 PK 完整版插件"""
 
-# 启动回调
-async def on_load():
-    """插件加载时执行"""
-    print("🎮 Astro Dicky PK - Complete Edition v" + VERSION)
-    return True
+    def __init__(self, context: Context, config: dict):
+        super().__init__(context, config)
+        self.initialized = False
+        logger.info(f"🎮 Astro Dicky PK - Complete Edition v{VERSION} 加载中...")
 
-# 停止回调  
-async def on_unload():
-    """插件停止时执行"""
-    print("⏹️ Astro Dicky PK 已停止")
-    return True
+    async def initialize(self):
+        """插件初始化"""
+        if not self.initialized:
+            await lazy_init_database()
+            self.initialized = True
+            logger.info("✅ 数据库初始化完成")
 
-# 消息处理入口
-async def handle_message(bot, event, context):
-    """处理群聊消息"""
-    # 获取消息内容
-    if hasattr(event, 'get_content'):
-        msg_content = event.get_content()
-    else:
-        return False
-    
-    # 获取发送者信息
-    sender_id = getattr(event, 'get_sender_id', lambda: 'unknown')()
-    sender_name = getattr(event, 'get_sender_name', lambda: 'unknown')()
-    
-    # 调用原始核心逻辑
-    try:
-        from .src.main import LazyDBInitializer
+    def _get_sender_info(self, event: AstrMessageEvent):
+        """获取发送者信息"""
+        sender_id = event.get_sender_id()
+        sender_name = event.get_sender_name()
+        group_id = ""
         
-        # 初始化数据库
-        lazy_db = LazyDBInitializer()
-        await lazy_db.init()
+        # 尝试获取群组ID
+        if hasattr(event, 'get_group_id'):
+            group_id = event.get_group_id()
+        elif hasattr(event, 'message_obj') and hasattr(event.message_obj, 'group_id'):
+            group_id = event.message_obj.group_id
+            
+        return str(sender_id), sender_name, str(group_id)
+
+    def _get_at_qq(self, event: AstrMessageEvent):
+        """获取被@的用户ID"""
+        for comp in event.message_obj.message:
+            if isinstance(comp, At):
+                return str(comp.qq)
+        return None
+
+    def _get_text_content(self, event: AstrMessageEvent):
+        """获取文本内容"""
+        text_parts = []
+        for comp in event.message_obj.message:
+            if isinstance(comp, Plain):
+                text_parts.append(comp.text)
+        return "".join(text_parts).strip()
+
+    @filter.command("牛子帮助")
+    @filter.command("帮助")
+    async def cmd_help(self, event: AstrMessageEvent):
+        """显示帮助信息"""
+        yield event.plain_result(HELPPER)
+
+    @filter.command("注册牛子")
+    async def cmd_sign_up(self, event: AstrMessageEvent):
+        """注册牛子"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
         
-        # 处理消息
         result = message_processor(
-            message=msg_content,
+            message="注册牛子",
             qq=int(sender_id),
-            group=getattr(event, 'group_id', 0),
+            group=int(group_id) if group_id else 0,
             nickname=sender_name
         )
-        return result
-    except Exception as e:
-        print(f"❌ 处理消息失败：{e}")
-        return False
+        
+        if result:
+            yield event.plain_result(result)
 
-# 暴露给外部使用
-def process_chinchin_message(message: str, qq: int, group: int, at_qq=None):
-    """快速消息处理函数"""
-    return message_processor(
-        message=message,
-        qq=qq,
-        group=group,
-        at_qq=at_qq
-    )
+    @filter.command("牛子")
+    async def cmd_chinchin(self, event: AstrMessageEvent):
+        """查看牛子信息"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛子排名")
+    @filter.command("排行")
+    async def cmd_ranking(self, event: AstrMessageEvent):
+        """查看排名"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子排名",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛子成就")
+    async def cmd_badge(self, event: AstrMessageEvent):
+        """查看成就"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子成就",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛子转生")
+    async def cmd_rebirth(self, event: AstrMessageEvent):
+        """转生"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子转生",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛子仙境")
+    async def cmd_farm_info(self, event: AstrMessageEvent):
+        """查看农场"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子仙境",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛子修炼")
+    @filter.command("牛子练功")
+    @filter.command("牛子修仙")
+    async def cmd_farm_start(self, event: AstrMessageEvent):
+        """开始修炼"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛子修炼",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("牛友")
+    @filter.command("牛子好友")
+    async def cmd_friends(self, event: AstrMessageEvent):
+        """查看好友"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="牛友",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("🔒我")
+    @filter.command("锁我")
+    async def cmd_lock_me(self, event: AstrMessageEvent):
+        """锁自己"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        result = message_processor(
+            message="🔒我",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("打胶")
+    async def cmd_glue(self, event: AstrMessageEvent):
+        """打胶"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        # 检查是否有@目标
+        at_qq = self._get_at_qq(event)
+        
+        result = message_processor(
+            message="打胶",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq) if at_qq else None,
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("pk")
+    async def cmd_pk(self, event: AstrMessageEvent):
+        """PK"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        # PK必须有@目标
+        at_qq = self._get_at_qq(event)
+        if not at_qq:
+            yield event.plain_result("请@你想PK的人！")
+            return
+        
+        result = message_processor(
+            message="pk",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq),
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("看他牛子")
+    @filter.command("看看牛子")
+    async def cmd_see_chinchin(self, event: AstrMessageEvent):
+        """查看别人的牛子"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        at_qq = self._get_at_qq(event)
+        if not at_qq:
+            yield event.plain_result("请@你想查看的人！")
+            return
+        
+        result = message_processor(
+            message="看他牛子",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq),
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("添加牛友")
+    @filter.command("添加朋友")
+    async def cmd_friends_add(self, event: AstrMessageEvent):
+        """添加好友"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        at_qq = self._get_at_qq(event)
+        if not at_qq:
+            yield event.plain_result("请@你想添加的好友！")
+            return
+        
+        result = message_processor(
+            message="添加牛友",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq),
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("删除牛友")
+    @filter.command("删除朋友")
+    async def cmd_friends_delete(self, event: AstrMessageEvent):
+        """删除好友"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        at_qq = self._get_at_qq(event)
+        if not at_qq:
+            yield event.plain_result("请@你想删除的好友！")
+            return
+        
+        result = message_processor(
+            message="删除牛友",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq),
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
+
+    @filter.command("🔒")
+    @filter.command("锁")
+    async def cmd_lock_target(self, event: AstrMessageEvent):
+        """锁别人"""
+        await self.initialize()
+        sender_id, sender_name, group_id = self._get_sender_info(event)
+        
+        at_qq = self._get_at_qq(event)
+        if not at_qq:
+            yield event.plain_result("请@你想锁的人！")
+            return
+        
+        result = message_processor(
+            message="🔒",
+            qq=int(sender_id),
+            group=int(group_id) if group_id else 0,
+            at_qq=int(at_qq),
+            nickname=sender_name
+        )
+        
+        if result:
+            yield event.plain_result(result)
