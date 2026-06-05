@@ -1,10 +1,8 @@
 # Astro Dicky PK Complete Edition Dependencies
-nonebot2>=2.0.0
-arrow>=1.2.0
-aiomysql>=0.1.1
-aiosqlite>=0.17.0
+# AstrBot 内置依赖，无需额外安装
+# arrow 已内置
+# ujson 可选，标准 json 也可用
 
-# 可选依赖（如果使用 MySQL 数据库）
+# 如果需要 MySQL 支持，取消注释以下行：
+# aiomysql>=0.1.1
 # PyMySQL>=1.0
-# Additional dependencies for original code
-ujson>=5.0.0
