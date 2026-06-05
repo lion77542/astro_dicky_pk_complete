@@ -1,7 +1,7 @@
 name: astro_dicky_pk_complete
 display_name: "牛子 PK 完整版 ⚡"
 desc: "完整保留原版所有功能！无阉割的 AstrBot 牛子 PK 游戏 🎮"
-version: v3.0.0
+version: v3.0.1
 author: tkgs0 (原), lion77542 (移植)
 repo: https://github.com/lion77542/astro_dicky_pk_complete
 astrbot_version: ">=4.16,<5"
