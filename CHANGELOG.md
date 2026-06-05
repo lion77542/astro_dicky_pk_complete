@@ -1,5 +1,19 @@
 # 版本更新日志
 
+## v3.0.2 (2026-06-05)
+
+### ✅ 完整检查
+
+- **检查所有文件** - 确保每个文件都符合 AstrBot Skills 规范
+- **main.py** - 使用 `@filter.command` 注册命令，使用 `yield event.plain_result()` 返回消息
+- **_conf_schema.json** - 格式正确，使用扁平结构
+- **metadata.yaml** - 格式正确
+- **src/config.py** - 使用 `PLUGIN_DATA_DIR` 存储配置
+- **src/db.py** - 使用 `PLUGIN_DATA_DIR` 存储数据库
+- **requirements.txt** - 正确
+
+---
+
 ## v3.0.1 (2026-06-05)
 
 ### 🐛 修复
