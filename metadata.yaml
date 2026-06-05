@@ -37,7 +37,7 @@ desc: |
   - ✅ 持续维护更新
 
 author: tkgs0 (原), lion77542 (移植)
-version: v2.0.0
+version: v2.0.1
 license: MIT
 repo: https://github.com/lion77542/astro_dicky_pk_complete
 support_platforms:
