@@ -2,20 +2,17 @@
 Astro Dicky PK - Complete Edition
 牛子 PK 完整版 - AstrBot 标准化插件
 
-✨ Full port with ALL original features preserved!
-✅ Compatible with AstrBot >= 4.16
-🎮 Supports: QQ/Telegram/Discord/Lark
+严格按照 AstrBot Skills 规范开发
 """
 
 import logging
+import asyncio
+from pathlib import Path
 from astrbot.api import AstrBotConfig
 from astrbot.api.event import AstrMessageEvent
 from astrbot.api.event import filter
 from astrbot.api.star import Context, Star, register
-from astrbot.api.message_components import At
-
-from .src.main import message_processor, KEYWORDS, VERSION, HELPPER
-from .src.db import lazy_init_database
+from astrbot.api.message_components import At, Plain
 
 logger = logging.getLogger("astrbot")
 
@@ -24,7 +21,7 @@ logger = logging.getLogger("astrbot")
     "astro_dicky_pk_complete",
     "tkgs0 (原), lion77542 (移植)",
     "🎮 完整保留原版所有功能的牛子 PK 游戏",
-    "v2.0.4",
+    "v3.0.0",
     "https://github.com/lion77542/astro_dicky_pk_complete"
 )
 class DickyPKPlugin(Star):
@@ -34,36 +31,52 @@ class DickyPKPlugin(Star):
         super().__init__(context)
         self.config = config
         self.initialized = False
-        logger.info(f"🎮 Astro Dicky PK - Complete Edition v{VERSION} 加载中...")
+        logger.info("🎮 Astro Dicky PK - Complete Edition v3.0.0 加载中...")
 
     async def initialize(self):
-        """初始化数据库"""
+        """初始化插件"""
         if not self.initialized:
-            await lazy_init_database()
+            # 获取数据目录
+            data_dir = self.get_data_dir()
+            logger.info(f"📁 数据目录: {data_dir}")
+            
+            # 初始化数据库
+            from .src.db import Sql
+            Sql.init_database()
+            
+            # 检查配置
+            from .src.config import Config
+            Config.deprecated_tips()
+            
             self.initialized = True
-            logger.info("✅ 数据库初始化完成")
+            logger.info("✅ 插件初始化完成")
 
-    def _get_sender_info(self, event: AstrMessageEvent):
-        """获取发送者信息"""
-        sender_id = event.get_sender_id()
-        sender_name = event.get_sender_name()
-        group_id = ""
-        if hasattr(event, 'get_group_id'):
-            group_id = event.get_group_id()
-        elif hasattr(event, 'message_obj') and hasattr(event.message_obj, 'group_id'):
-            group_id = event.message_obj.group_id
-        return str(sender_id), sender_name, str(group_id)
+    def _get_sender_id(self, event: AstrMessageEvent) -> str:
+        """获取发送者 ID"""
+        return str(event.get_sender_id())
 
-    def _get_at_qq(self, event: AstrMessageEvent):
-        """获取被@的用户ID"""
+    def _get_sender_name(self, event: AstrMessageEvent) -> str:
+        """获取发送者昵称"""
+        return event.get_sender_name() or "未知用户"
+
+    def _get_group_id(self, event: AstrMessageEvent) -> int:
+        """获取群组 ID"""
+        if hasattr(event.message_obj, 'group_id'):
+            return event.message_obj.group_id or 0
+        return 0
+
+    def _get_at_qq(self, event: AstrMessageEvent) -> int | None:
+        """获取被@的用户 ID"""
         for comp in event.message_obj.message:
             if isinstance(comp, At):
-                return str(comp.qq)
+                return int(comp.qq)
         return None
 
-    def _process_message(self, event: AstrMessageEvent, message: str, require_at: bool = False):
+    def _process_message(self, event: AstrMessageEvent, message: str, require_at: bool = False) -> str | None:
         """处理消息并返回结果"""
-        sender_id, sender_name, group_id = self._get_sender_info(event)
+        sender_id = self._get_sender_id(event)
+        sender_name = self._get_sender_name(event)
+        group_id = self._get_group_id(event)
         at_qq = self._get_at_qq(event)
 
         if require_at and not at_qq:
@@ -80,11 +93,12 @@ class DickyPKPlugin(Star):
                 collected_messages.extend([m for m in message if m])
 
         # 调用原项目的 message_processor
+        from .src.main import message_processor
         result = message_processor(
             message=message,
             qq=int(sender_id),
-            group=int(group_id) if group_id else 0,
-            at_qq=int(at_qq) if at_qq else None,
+            group=group_id,
+            at_qq=at_qq,
             nickname=sender_name,
             impl_send_message=send_message_hook
         )
@@ -100,6 +114,7 @@ class DickyPKPlugin(Star):
     @filter.command("帮助")
     async def cmd_help(self, event: AstrMessageEvent):
         """显示帮助信息"""
+        from .src.main import HELPPER
         yield event.plain_result(HELPPER)
 
     @filter.command("注册牛子")
